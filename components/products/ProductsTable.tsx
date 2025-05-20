@@ -1,12 +1,30 @@
-import { ProductsWithCategory } from "@/app/admin/products/page"
-import { formatCurrency } from "@/src/utils"
-import Link from "next/link"
+"use client";
+
+import { ProductsWithCategory } from "@/app/admin/products/page";
+import { formatCurrency } from "@/src/utils";
+import Link from "next/link";
+import { deleteProduct } from "@/actions/delete-product-action";
+import { useRouter } from "next/navigation";
 
 type ProductTableProps = {
-    products: ProductsWithCategory
-}
+    products: ProductsWithCategory;
+};
 
 export default function ProductTable({ products }: ProductTableProps) {
+    const router = useRouter();
+
+    const handleDelete = async (id: number) => {
+        if (confirm("¿Deseas eliminar este producto?")) {
+            const result = await deleteProduct(id);
+            if (result.success) {
+                alert("Producto eliminado correctamente");
+                router.refresh(); // Recarga la tabla sin recargar toda la página
+            } else {
+                alert("Error al eliminar el producto");
+            }
+        }
+    };
+
     return (
         <div className="px-4 sm:px-6 lg:px-8 mt-20">
             <div className="mt-8 flow-root ">
@@ -41,11 +59,19 @@ export default function ProductTable({ products }: ProductTableProps) {
                                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                             {product.category.name}
                                         </td>
-                                        <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                                        <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0 flex gap-2 justify-end">
                                             <Link
                                                 href={`/admin/products/${product.id}/edit`}
                                                 className="text-indigo-600 hover:text-indigo-800"
-                                            >Editar <span className="sr-only">, {product.name}</span> </Link>
+                                            >
+                                                Editar <span className="sr-only">, {product.name}</span>
+                                            </Link>
+                                            <button
+                                                onClick={() => handleDelete(product.id)}
+                                                className="text-red-600 hover:text-red-800 ml-3"
+                                            >
+                                                Eliminar
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}
@@ -55,5 +81,5 @@ export default function ProductTable({ products }: ProductTableProps) {
                 </div>
             </div>
         </div>
-    )
+    );
 }
