@@ -1,13 +1,11 @@
+"use client"
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { SessionProvider } from "next-auth/react"; // Importamos SessionProvider
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: "Quisco Next.js con App Router y Prisma",
-  description: "Quisco Next.js con App Router y Prisma",
-};
 
 export default function RootLayout({
   children,
@@ -16,7 +14,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-gray-100`}>{children}</body>
+      <body className={`${inter.className} bg-gray-100`}>
+        <SessionProvider> {/* Envolvemos la aplicación con SessionProvider */}
+          {children}
+        </SessionProvider>
+      </body>
     </html>
   );
 }
